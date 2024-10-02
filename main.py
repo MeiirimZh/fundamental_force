@@ -4,6 +4,8 @@ pygame.init()
 screen = pygame.display.set_mode((960, 600))
 pygame.display.set_caption("Fundamental Force")
 
+bg = pygame.image.load('SpaceBg.jpg')
+
 class Player:
     def __init__(self, x, y, speed):
         self.sprite = pygame.image.load('FlavioShip.png')
@@ -30,7 +32,7 @@ while running:
     elif keys[pygame.K_LEFT] and player.x >= 0:
         player.x -= player.speed
 
-    screen.fill((0, 0, 0))
+    screen.blit(bg, (0, 0))
     screen.blit(player.sprite, (player.x, player.y))
 
-    pygame.display.update()
+    pygame.display.flip()
