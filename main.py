@@ -4,7 +4,9 @@ pygame.init()
 screen = pygame.display.set_mode((960, 600))
 pygame.display.set_caption("Fundamental Force")
 
-bg = pygame.image.load('SpaceBg.jpg')
+bg = pygame.image.load('SpaceBg.jpg').convert()
+
+show_image = False
 
 class Player:
     def __init__(self, x, y, speed):
@@ -14,13 +16,26 @@ class Player:
         self.y = y
         self.speed = speed
 
+class Beam:
+    def __init__(self, x, y, speed):
+        self.sprite = pygame.image.load('BlueBeam1.png')
+
+        self.x = x
+        self.y = y
+        self.speed = speed
+
 player = Player(0, 0, 1)
+beam = Beam(0, 0, 2)
 
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                show_image = True
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player.y >= 0:
@@ -34,5 +49,8 @@ while running:
 
     screen.blit(bg, (0, 0))
     screen.blit(player.sprite, (player.x, player.y))
+
+    if show_image:
+        screen.blit(beam.sprite, (player.x+15, player.y-70))
 
     pygame.display.flip()
