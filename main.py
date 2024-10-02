@@ -24,6 +24,9 @@ class Beam:
         self.y = y
         self.speed = speed
 
+    def move(self):
+        self.y -= self.speed
+
 player = Player(0, 0, 1)
 beam = Beam(0, 0, 2)
 
@@ -36,6 +39,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
                 show_image = True
+                beam.x = player.x + 15
+                beam.y = player.y
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player.y >= 0:
@@ -51,6 +56,10 @@ while running:
     screen.blit(player.sprite, (player.x, player.y))
 
     if show_image:
-        screen.blit(beam.sprite, (player.x+15, player.y-70))
+        beam.move()
+        if beam.y > -50:
+            screen.blit(beam.sprite, (beam.x, beam.y))
+        else:
+            show_image = False
 
     pygame.display.flip()
