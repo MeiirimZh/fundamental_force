@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 pygame.init()
@@ -6,8 +8,6 @@ pygame.display.set_caption("Fundamental Force")
 
 bg = pygame.image.load('SpaceBg.jpg').convert()
 
-show_image = False
-
 class Player:
     def __init__(self, x, y, speed):
         self.sprite = pygame.image.load('FlavioShip.png')
@@ -15,6 +15,9 @@ class Player:
         self.x = x
         self.y = y
         self.speed = speed
+
+        self.reload_time = 300
+        self.last_time_shot = 0
 
 beams = []
 
@@ -29,20 +32,30 @@ class Beam:
     def move(self):
         self.y -= self.speed
 
+class EntropySoldier:
+    def __init__(self, speed):
+        self.sprite = pygame.image.load('EntropySoldier.png')
+
+        self.x = random.randint(100, 150)
+        self.y = random.randint(100, 150)
+        self.speed = speed
+
 player = Player(0, 0, 1)
+entropy_soldier = EntropySoldier(0.5)
 
 running = True
 while running:
+    current_time = pygame.time.get_ticks()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
-                beams.append(Beam(0, 0, 2))
-                show_image = True
-                beams[-1].x = player.x + 15
-                beams[-1].y = player.y
+                if current_time - player.last_time_shot > player.reload_time:
+                    beams.append(Beam(player.x+15, player.y, 2))
+                    player.last_time_shot = current_time
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player.y >= 0:
@@ -56,6 +69,7 @@ while running:
 
     screen.blit(bg, (0, 0))
     screen.blit(player.sprite, (player.x, player.y))
+    screen.blit(entropy_soldier.sprite, (entropy_soldier.x, entropy_soldier.y))
 
     for beam in beams[:]:
         beam.move()
