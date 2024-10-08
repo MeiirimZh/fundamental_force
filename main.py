@@ -66,7 +66,10 @@ class EntropySoldier:
         self.movement_duration = random.randint(3, 5)
 
 player = Player(450, 400, 1)
+
 entropy_soldier = EntropySoldier(0.3)
+entropy_soldier_2 = EntropySoldier(0.3)
+entropy_soldier_3 = EntropySoldier(0.3)
 
 running = True
 while running:
@@ -93,13 +96,19 @@ while running:
         player.x -= player.speed
 
     screen.blit(bg, (0, 0))
+
     entropy_soldier.move()
+    entropy_soldier_2.move()
+    entropy_soldier_3.move()
 
     if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == round(current_time/1000):
         entropy_soldier.change_direction(current_time)
 
     screen.blit(player.sprite, (player.x, player.y))
+
     screen.blit(entropy_soldier.sprite, (entropy_soldier.x, entropy_soldier.y))
+    screen.blit(entropy_soldier_2.sprite, (entropy_soldier_2.x, entropy_soldier_2.y))
+    screen.blit(entropy_soldier_3.sprite, (entropy_soldier_3.x, entropy_soldier_3.y))
 
     for beam in beams[:]:
         beam.move()
