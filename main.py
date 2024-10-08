@@ -80,8 +80,8 @@ while running:
 
     screen.blit(bg, (0, 0))
     entropy_soldier.move()
-    if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == current_time:
-        entropy_soldier.checkpoint_time = current_time
+    if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == round(current_time/1000):
+        entropy_soldier.checkpoint_time = round(current_time/1000)
         entropy_soldier.direction = random.choice(('R', 'L'))
         entropy_soldier.movement_duration = random.randint(3, 5)
 
