@@ -36,12 +36,23 @@ class EntropySoldier:
     def __init__(self, speed):
         self.sprite = pygame.image.load('EntropySoldier.png')
 
-        self.x = random.randint(100, 150)
-        self.y = random.randint(100, 150)
+        self.direction = random.choice(('R', 'L'))
+        self.movement_duration = random.randint(1, 2)
+
+        self.checkpoint_time = 0
+
+        self.x = random.randint(150, 300)
+        self.y = random.randint(150, 300)
         self.speed = speed
 
+    def move(self):
+        if self.direction == 'R':
+            self.x += self.speed
+        else:
+            self.x -= self.speed
+
 player = Player(0, 0, 1)
-entropy_soldier = EntropySoldier(0.5)
+entropy_soldier = EntropySoldier(0.3)
 
 running = True
 while running:
@@ -68,6 +79,12 @@ while running:
         player.x -= player.speed
 
     screen.blit(bg, (0, 0))
+    entropy_soldier.move()
+    if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == current_time:
+        entropy_soldier.checkpoint_time = current_time
+        entropy_soldier.direction = random.choice(('R', 'L'))
+        entropy_soldier.movement_duration = random.randint(3, 5)
+
     screen.blit(player.sprite, (player.x, player.y))
     screen.blit(entropy_soldier.sprite, (entropy_soldier.x, entropy_soldier.y))
 
