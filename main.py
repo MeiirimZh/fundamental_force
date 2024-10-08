@@ -45,20 +45,23 @@ class EntropySoldier:
         self.y = 50
         self.speed = speed
 
-    def move(self):
+    def move(self, current_time):
         if self.direction == 'R':
             if self.x < 889:
                 self.x += self.speed
             else:
                 self.direction = 'L'
         else:
-            if self.x > 71:
+            if self.x > 0:
                 self.x -= self.speed
             else:
                 self.direction = 'R'
 
+        if self.checkpoint_time + self.movement_duration == current_time:
+            self.change_direction(current_time)
+
     def change_direction(self, current_time):
-        self.checkpoint_time = round(current_time / 1000)
+        self.checkpoint_time = current_time
         if self.direction == 'R':
             self.direction = 'L'
         else:
@@ -67,9 +70,7 @@ class EntropySoldier:
 
 player = Player(450, 400, 1)
 
-entropy_soldier = EntropySoldier(0.3)
-entropy_soldier_2 = EntropySoldier(0.3)
-entropy_soldier_3 = EntropySoldier(0.3)
+entropy_soldiers = [EntropySoldier(0.3) for x in range(3)]
 
 running = True
 while running:
@@ -97,18 +98,13 @@ while running:
 
     screen.blit(bg, (0, 0))
 
-    entropy_soldier.move()
-    entropy_soldier_2.move()
-    entropy_soldier_3.move()
-
-    if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == round(current_time/1000):
-        entropy_soldier.change_direction(current_time)
+    for soldier in entropy_soldiers:
+        soldier.move(round(current_time/1000))
 
     screen.blit(player.sprite, (player.x, player.y))
 
-    screen.blit(entropy_soldier.sprite, (entropy_soldier.x, entropy_soldier.y))
-    screen.blit(entropy_soldier_2.sprite, (entropy_soldier_2.x, entropy_soldier_2.y))
-    screen.blit(entropy_soldier_3.sprite, (entropy_soldier_3.x, entropy_soldier_3.y))
+    for soldier in entropy_soldiers:
+        screen.blit(soldier.sprite, (soldier.x, soldier.y))
 
     for beam in beams[:]:
         beam.move()
