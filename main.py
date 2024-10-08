@@ -37,21 +37,35 @@ class EntropySoldier:
         self.sprite = pygame.image.load('EntropySoldier.png')
 
         self.direction = random.choice(('R', 'L'))
-        self.movement_duration = random.randint(1, 2)
+        self.movement_duration = random.randint(3, 5)
 
         self.checkpoint_time = 0
 
-        self.x = random.randint(150, 300)
-        self.y = random.randint(150, 300)
+        self.x = random.randint(300, 400)
+        self.y = 50
         self.speed = speed
 
     def move(self):
         if self.direction == 'R':
-            self.x += self.speed
+            if self.x < 889:
+                self.x += self.speed
+            else:
+                self.direction = 'L'
         else:
-            self.x -= self.speed
+            if self.x > 71:
+                self.x -= self.speed
+            else:
+                self.direction = 'R'
 
-player = Player(0, 0, 1)
+    def change_direction(self, current_time):
+        self.checkpoint_time = round(current_time / 1000)
+        if self.direction == 'R':
+            self.direction = 'L'
+        else:
+            self.direction = 'R'
+        self.movement_duration = random.randint(3, 5)
+
+player = Player(450, 400, 1)
 entropy_soldier = EntropySoldier(0.3)
 
 running = True
@@ -80,10 +94,9 @@ while running:
 
     screen.blit(bg, (0, 0))
     entropy_soldier.move()
+
     if entropy_soldier.checkpoint_time + entropy_soldier.movement_duration == round(current_time/1000):
-        entropy_soldier.checkpoint_time = round(current_time/1000)
-        entropy_soldier.direction = random.choice(('R', 'L'))
-        entropy_soldier.movement_duration = random.randint(3, 5)
+        entropy_soldier.change_direction(current_time)
 
     screen.blit(player.sprite, (player.x, player.y))
     screen.blit(entropy_soldier.sprite, (entropy_soldier.x, entropy_soldier.y))
