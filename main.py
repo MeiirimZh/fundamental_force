@@ -139,7 +139,7 @@ while running:
     for enemy_beam in enemy_beams:
         enemy_beam.move()
         screen.blit(enemy_beam.sprite, (enemy_beam.x, enemy_beam.y))
-        if (player.x <= enemy_beam.x <= player.x + 59) and (player.y <= enemy_beam.y <= player.y + 61):
+        if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + 59) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + 61):
             enemy_beams.remove(enemy_beam)
             player.armor -= 1
 
