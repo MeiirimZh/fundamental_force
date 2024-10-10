@@ -57,23 +57,25 @@ class EntropySoldier:
         self.checkpoint_time = 0
 
         self.x = random.randint(100, 800)
-        self.y = 50
+        self.y = -20
         self.speed = speed
 
-    def move(self, current_time):
+    def move(self):
         if self.direction == 'R':
             if self.x < 889:
-                self.x += self.speed
+                # self.x += self.speed
+                self.y += self.speed
             else:
                 self.direction = 'L'
         else:
             if self.x > 0:
-                self.x -= self.speed
+                # self.x -= self.speed
+                self.y += self.speed
             else:
                 self.direction = 'R'
 
-        if self.checkpoint_time + self.movement_duration == current_time:
-            self.change_direction(current_time)
+        # if self.checkpoint_time + self.movement_duration == current_time:
+        #     self.change_direction(current_time)
 
     def change_direction(self, current_time):
         enemy_beams.append(SoldierBeam(self.x, self.y, 1))
@@ -86,7 +88,11 @@ class EntropySoldier:
 
 player = Player(450, 400, 1, 3)
 
-entropy_soldiers = [EntropySoldier(0.3) for x in range(10)]
+entropy_soldiers = []
+
+enemy_count = 10
+
+last_enemy_spawn_time = 0
 
 running = True
 while running:
@@ -116,9 +122,17 @@ while running:
 
     screen.blit(bg, (0, 0))
 
+    if round(current_time/1000) - last_enemy_spawn_time == 1 and len(entropy_soldiers) < enemy_count:
+        entropy_soldiers.append(EntropySoldier(0.5))
+        last_enemy_spawn_time = round(current_time/1000)
+    else:
+        last_enemy_spawn_time = round(current_time / 1000)
+
     for soldier in entropy_soldiers:
-        soldier.move(round(current_time/1000))
         screen.blit(soldier.sprite, (soldier.x, soldier.y))
+        soldier.move()
+        if soldier.y >= 600:
+            entropy_soldiers.remove(soldier)
 
     screen.blit(armor_text, (10, 10))
 
@@ -133,8 +147,9 @@ while running:
 
         for soldier in entropy_soldiers:
             if beam.x in range(int(soldier.x), int(soldier.x)+71) and beam.y in range(int(soldier.y), int(soldier.y)+79):
-                # beams.remove(beam)
+                beams.remove(beam)
                 entropy_soldiers.remove(soldier)
+                enemy_count -= 1
 
     for enemy_beam in enemy_beams:
         enemy_beam.move()
