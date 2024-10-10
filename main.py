@@ -8,6 +8,7 @@ pygame.display.set_caption("Fundamental Force")
 bg = pygame.image.load('SpaceBg.jpg').convert()
 
 font = pygame.font.Font('BebasNeue-Regular.ttf', 32)
+info_font = pygame.font.Font('BebasNeue-Regular.ttf', 18)
 
 class Player:
     def __init__(self, x, y, speed, armor):
@@ -60,19 +61,10 @@ class EntropySoldier:
         self.y = -20
         self.speed = speed
 
+        enemy_beams.append(SoldierBeam(self.x+23, self.y, 1))
+
     def move(self):
-        if self.direction == 'R':
-            if self.x < 889:
-                # self.x += self.speed
-                self.y += self.speed
-            else:
-                self.direction = 'L'
-        else:
-            if self.x > 0:
-                # self.x -= self.speed
-                self.y += self.speed
-            else:
-                self.direction = 'R'
+        self.y += self.speed
 
         # if self.checkpoint_time + self.movement_duration == current_time:
         #     self.change_direction(current_time)
@@ -90,15 +82,20 @@ player = Player(450, 400, 1, 3)
 
 entropy_soldiers = []
 
-enemy_count = 10
+enemy_count = 20
 
 last_enemy_spawn_time = 0
+
+help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
+             info_font.render('Shoot: [A]', True, (255, 255, 255)))
 
 running = True
 while running:
     current_time = pygame.time.get_ticks()
 
     armor_text = font.render(f'Armor: {player.armor}', True, (255, 255, 255))
+
+    enemy_count_text = font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -135,6 +132,9 @@ while running:
             entropy_soldiers.remove(soldier)
 
     screen.blit(armor_text, (10, 10))
+    screen.blit(enemy_count_text, (10, 50))
+    screen.blit(help_text[0], (10, 500))
+    screen.blit(help_text[1], (10, 520))
 
     screen.blit(player.sprite, (player.x, player.y))
 
