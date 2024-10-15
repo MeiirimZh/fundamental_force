@@ -25,7 +25,8 @@ class Player:
         self.reload_time = 300
         self.last_time_shot = 0
 
-        self.rush_time = 5
+        self.rush_reload = 10
+        self.rush_duration = 5
         self.last_time_rushed = 0
 
         self.can_rush = False
@@ -75,7 +76,7 @@ class EntropySoldier:
     def move(self):
         self.y += self.speed
 
-player = Player(450, 400, 1, 3)
+player = Player(450, 400, 1, 5)
 
 entropy_soldiers = []
 
@@ -86,7 +87,8 @@ last_enemy_spawn_time = 0
 rush = False
 
 help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
-             info_font.render('Shoot: [A]', True, (255, 255, 255)))
+             info_font.render('Shoot: [A]', True, (255, 255, 255)),
+             info_font.render('Rush: [S]', True, (255, 255, 255)))
 
 start_time = 0
 
@@ -96,7 +98,7 @@ def reset_game():
         enemy_count, last_enemy_spawn_time, rush
     beams = []
     enemy_beams = []
-    player.armor = 3
+    player.armor = 5
     player.x = 450
     player.y = 400
     entropy_soldiers = []
@@ -116,8 +118,8 @@ def wave1():
 
     enemy_count_text = font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
 
-    if round(elapsed_time/1000)-player.last_time_rushed < 5:
-        rush_text = font.render(f'Rush: {round(elapsed_time/1000)-player.last_time_rushed}', True, (255, 255, 255))
+    if round(elapsed_time/1000)-player.last_time_rushed < player.rush_reload:
+        rush_text = font.render(f'Rush: {player.rush_reload-(round(elapsed_time/1000)-player.last_time_rushed)}', True, (255, 255, 255))
     else:
         rush_text = font.render('Rush: READY', True, (255, 255, 255))
         player.can_rush = True
@@ -139,8 +141,15 @@ def wave1():
 
     if keys[pygame.K_s]:
         if player.can_rush:
-            player.last_time_rushed = round(elapsed_time/1000)
+            player.last_time_rushed = round(elapsed_time / 1000)
             rush = True
+
+    if rush:
+        rush_text = font.render('Rush: EXECUTING', True, (255, 255, 255))
+        if round(elapsed_time/1000) - player.last_time_rushed == player.rush_duration:
+            rush = False
+            player.last_time_rushed += player.rush_duration
+            player.can_rush = False
 
     screen.blit(bg, (0, 0))
 
@@ -170,6 +179,7 @@ def wave1():
             if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
                 if not soldier.has_collied:
                     entropy_soldiers.remove(soldier)
+                    enemy_count -= 1
             else:
                 soldier.has_collied = False
 
@@ -177,6 +187,7 @@ def wave1():
     screen.blit(enemy_count_text, (10, 50))
     screen.blit(help_text[0], (10, 500))
     screen.blit(help_text[1], (10, 520))
+    screen.blit(help_text[2], (10, 540))
     screen.blit(rush_text, (10, 90))
 
     screen.blit(player.sprite, (player.x, player.y))
@@ -199,7 +210,9 @@ def wave1():
         screen.blit(enemy_beam.sprite, (enemy_beam.x, enemy_beam.y))
         if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + 59) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + 61):
             enemy_beams.remove(enemy_beam)
-            player.armor -= 1
+            if not rush:
+                player.armor -= 1
+
         if rush:
             enemy_beam.speed = 4
 
