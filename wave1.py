@@ -1,4 +1,6 @@
 import random
+from multiprocessing.resource_tracker import ensure_running
+
 import pygame
 
 pygame.init()
@@ -22,6 +24,11 @@ class Player:
 
         self.reload_time = 300
         self.last_time_shot = 0
+
+        self.rush_time = 5
+        self.last_time_rushed = 0
+
+        self.can_rush = False
 
 beams = []
 enemy_beams = []
@@ -68,15 +75,6 @@ class EntropySoldier:
     def move(self):
         self.y += self.speed
 
-    def change_direction(self, current_time):
-        enemy_beams.append(SoldierBeam(self.x, self.y, 1))
-        self.checkpoint_time = current_time
-        if self.direction == 'R':
-            self.direction = 'L'
-        else:
-            self.direction = 'R'
-        self.movement_duration = random.randint(3, 5)
-
 player = Player(450, 400, 1, 3)
 
 entropy_soldiers = []
@@ -85,13 +83,17 @@ enemy_count = 20
 
 last_enemy_spawn_time = 0
 
+rush = False
+
 help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
              info_font.render('Shoot: [A]', True, (255, 255, 255)))
 
+start_time = 0
+
 def reset_game():
-    global beams, enemy_beams, \
+    global start_time, beams, enemy_beams, \
         player, entropy_soldiers, \
-        enemy_count, last_enemy_spawn_time
+        enemy_count, last_enemy_spawn_time, rush
     beams = []
     enemy_beams = []
     player.armor = 3
@@ -100,15 +102,25 @@ def reset_game():
     entropy_soldiers = []
     enemy_count = 20
     last_enemy_spawn_time = 0
+    start_time = pygame.time.get_ticks()
+    player.last_time_rushed = 0
+    rush = False
 
 def wave1():
-    global enemy_count, last_enemy_spawn_time
+    global start_time, enemy_count, last_enemy_spawn_time, rush
 
     current_time = pygame.time.get_ticks()
+    elapsed_time = current_time - start_time
 
     armor_text = font.render(f'Armor: {player.armor}', True, (255, 255, 255))
 
     enemy_count_text = font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
+
+    if round(elapsed_time/1000)-player.last_time_rushed < 5:
+        rush_text = font.render(f'Rush: {round(elapsed_time/1000)-player.last_time_rushed}', True, (255, 255, 255))
+    else:
+        rush_text = font.render('Rush: READY', True, (255, 255, 255))
+        player.can_rush = True
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player.y >= 0:
@@ -125,6 +137,11 @@ def wave1():
             beams.append(Beam(player.x + 15, player.y, 2))
             player.last_time_shot = current_time
 
+    if keys[pygame.K_s]:
+        if player.can_rush:
+            player.last_time_rushed = round(elapsed_time/1000)
+            rush = True
+
     screen.blit(bg, (0, 0))
 
     if round(current_time/1000) - last_enemy_spawn_time == 1 and len(entropy_soldiers) < enemy_count:
@@ -139,17 +156,28 @@ def wave1():
         if soldier.y >= 600:
             entropy_soldiers.remove(soldier)
 
-        if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
-            if not soldier.has_collied:
-                player.armor -= 1
-                soldier.has_collied = True
+        if rush:
+            soldier.speed = 2
+
+        if not rush:
+            if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
+                if not soldier.has_collied:
+                    player.armor -= 1
+                    soldier.has_collied = True
+            else:
+                soldier.has_collied = False
         else:
-            soldier.has_collied = False
+            if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
+                if not soldier.has_collied:
+                    entropy_soldiers.remove(soldier)
+            else:
+                soldier.has_collied = False
 
     screen.blit(armor_text, (10, 10))
     screen.blit(enemy_count_text, (10, 50))
     screen.blit(help_text[0], (10, 500))
     screen.blit(help_text[1], (10, 520))
+    screen.blit(rush_text, (10, 90))
 
     screen.blit(player.sprite, (player.x, player.y))
 
@@ -172,5 +200,7 @@ def wave1():
         if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + 59) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + 61):
             enemy_beams.remove(enemy_beam)
             player.armor -= 1
+        if rush:
+            enemy_beam.speed = 4
 
     pygame.display.flip()
