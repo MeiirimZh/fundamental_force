@@ -1,5 +1,7 @@
+import wave1 as w1
 from wave1 import *
 from gameover import *
+from win import *
 
 def main():
     running = True
@@ -9,13 +11,15 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        if player.armor != 0:
+        if w1.enemy_count == 0:
+            win()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                    running = False
+        elif player.armor != 0:
             wave1()
         else:
             game_over()
-
-    pygame.quit()
-
 
 if __name__ == "__main__":
     main()

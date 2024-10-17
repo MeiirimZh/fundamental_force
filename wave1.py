@@ -1,6 +1,4 @@
 import random
-from multiprocessing.resource_tracker import ensure_running
-
 import pygame
 
 pygame.init()
@@ -90,6 +88,8 @@ help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
              info_font.render('Shoot: [A]', True, (255, 255, 255)),
              info_font.render('Rush: [S]', True, (255, 255, 255)))
 
+game_won = False
+
 start_time = 0
 
 def reset_game():
@@ -109,7 +109,7 @@ def reset_game():
     rush = False
 
 def wave1():
-    global start_time, enemy_count, last_enemy_spawn_time, rush
+    global start_time, last_enemy_spawn_time, rush, game_won, enemy_count
 
     current_time = pygame.time.get_ticks()
     elapsed_time = current_time - start_time
