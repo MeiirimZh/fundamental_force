@@ -1,18 +1,30 @@
 import random
 import pygame
 
+# Configuring the window
 pygame.init()
 screen = pygame.display.set_mode((960, 600))
 pygame.display.set_caption("Fundamental Force")
 
+# Images
 bg = pygame.image.load('SpaceBg.jpg').convert()
+flavio_ship = pygame.image.load('FlavioShip.png')
 
+# Fonts
 font = pygame.font.Font('BebasNeue-Regular.ttf', 32)
 info_font = pygame.font.Font('BebasNeue-Regular.ttf', 18)
 
+# Sprite collections
+beams = []
+enemy_beams = []
+entropy_soldiers = []
+
 class Player:
-    def __init__(self, x, y, speed, armor):
-        self.sprite = pygame.image.load('FlavioShip.png')
+    def __init__(self, sprite, x, y, speed, armor):
+        self.sprite = sprite
+        
+        self.width = sprite.get_size()[0]
+        self.height = sprite.get_size()[1]
 
         self.x = x
         self.y = y
@@ -28,9 +40,6 @@ class Player:
         self.last_time_rushed = 0
 
         self.can_rush = False
-
-beams = []
-enemy_beams = []
 
 class Beam:
     def __init__(self, x, y, speed):
@@ -74,9 +83,7 @@ class EntropySoldier:
     def move(self):
         self.y += self.speed
 
-player = Player(450, 400, 1, 5)
-
-entropy_soldiers = []
+player = Player(flavio_ship,450, 400, 1, 5)
 
 enemy_count = 20
 
