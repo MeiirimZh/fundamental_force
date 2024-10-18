@@ -1,5 +1,6 @@
 import random
 import pygame
+from player import Player
 
 # Configuring the window
 pygame.init()
@@ -25,29 +26,6 @@ last_enemy_spawn_time = 0
 rush = False
 game_won = False
 start_time = 0
-
-# Player class
-class Player:
-    def __init__(self, sprite, x, y, speed, armor):
-        self.sprite = sprite
-        
-        self.width = sprite.get_size()[0]
-        self.height = sprite.get_size()[1]
-
-        self.x = x
-        self.y = y
-        self.speed = speed
-
-        self.armor = armor
-
-        self.reload_time = 300
-        self.last_time_shot = 0
-
-        self.rush_reload = 10
-        self.rush_duration = 5
-        self.last_time_rushed = 0
-
-        self.can_rush = False
 
 class Beam:
     def __init__(self, x, y, speed):
