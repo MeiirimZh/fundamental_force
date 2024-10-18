@@ -1,6 +1,6 @@
-import random
 import pygame
 from player import Player
+from common_enemy import CommonEnemy
 
 # Configuring the window
 pygame.init()
@@ -10,6 +10,8 @@ pygame.display.set_caption("Fundamental Force")
 # Images
 bg = pygame.image.load('SpaceBg.jpg').convert()
 flavio_ship = pygame.image.load('FlavioShip.png')
+entropy_soldier_ship = pygame.image.load('EntropySoldier.png')
+enemy_red_beam = pygame.image.load('RedBeam1.png')
 
 # Fonts
 font = pygame.font.Font('BebasNeue-Regular.ttf', 32)
@@ -37,37 +39,6 @@ class Beam:
 
     def move(self):
         self.y -= self.speed
-
-class SoldierBeam:
-    def __init__(self, x, y, speed):
-        self.sprite = pygame.image.load('RedBeam1.png')
-
-        self.x = x
-        self.y = y
-        self.speed = speed
-
-    def move(self):
-        self.y += self.speed
-
-class EntropySoldier:
-    def __init__(self, speed):
-        self.sprite = pygame.image.load('EntropySoldier.png')
-
-        self.direction = random.choice(('R', 'L'))
-        self.movement_duration = random.randint(3, 5)
-
-        self.checkpoint_time = 0
-
-        self.has_collied = False
-
-        self.x = random.randint(100, 800)
-        self.y = -20
-        self.speed = speed
-
-        enemy_beams.append(SoldierBeam(self.x+23, self.y, 1))
-
-    def move(self):
-        self.y += self.speed
 
 player = Player(flavio_ship,450, 400, 1, 5)
 
@@ -98,7 +69,6 @@ def wave1():
     elapsed_time = current_time - start_time
 
     armor_text = font.render(f'Armor: {player.armor}', True, (255, 255, 255))
-
     enemy_count_text = font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
 
     if round(elapsed_time/1000)-player.last_time_rushed < player.rush_reload:
@@ -137,7 +107,7 @@ def wave1():
     screen.blit(bg, (0, 0))
 
     if round(current_time/1000) - last_enemy_spawn_time == 1 and len(entropy_soldiers) < enemy_count:
-        entropy_soldiers.append(EntropySoldier(0.5))
+        entropy_soldiers.append(CommonEnemy(entropy_soldier_ship, enemy_beams, enemy_red_beam, 0.5))
         last_enemy_spawn_time = round(current_time/1000)
     else:
         last_enemy_spawn_time = round(current_time / 1000)
