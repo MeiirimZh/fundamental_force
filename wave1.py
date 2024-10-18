@@ -19,6 +19,14 @@ beams = []
 enemy_beams = []
 entropy_soldiers = []
 
+# Variables
+enemy_count = 20
+last_enemy_spawn_time = 0
+rush = False
+game_won = False
+start_time = 0
+
+# Player class
 class Player:
     def __init__(self, sprite, x, y, speed, armor):
         self.sprite = sprite
@@ -85,19 +93,9 @@ class EntropySoldier:
 
 player = Player(flavio_ship,450, 400, 1, 5)
 
-enemy_count = 20
-
-last_enemy_spawn_time = 0
-
-rush = False
-
 help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
              info_font.render('Shoot: [A]', True, (255, 255, 255)),
              info_font.render('Rush: [S]', True, (255, 255, 255)))
-
-game_won = False
-
-start_time = 0
 
 def reset_game():
     global start_time, beams, enemy_beams, \
@@ -215,7 +213,7 @@ def wave1():
     for enemy_beam in enemy_beams:
         enemy_beam.move()
         screen.blit(enemy_beam.sprite, (enemy_beam.x, enemy_beam.y))
-        if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + 59) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + 61):
+        if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + player.width) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + player.height):
             enemy_beams.remove(enemy_beam)
             if not rush:
                 player.armor -= 1
