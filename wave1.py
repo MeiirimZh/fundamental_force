@@ -1,5 +1,6 @@
 import pygame
 from player import Player
+from player_beam import PlayerBeam
 from common_enemy import CommonEnemy
 
 # Configuring the window
@@ -29,17 +30,6 @@ last_enemy_spawn_time = 0
 rush = False
 game_won = False
 start_time = 0
-
-class Beam:
-    def __init__(self, sprite, x, y, speed):
-        self.sprite = sprite
-
-        self.x = x
-        self.y = y
-        self.speed = speed
-
-    def move(self):
-        self.y -= self.speed
 
 player = Player(flavio_ship,450, 400, 1, 5)
 
@@ -90,7 +80,7 @@ def wave1():
 
     if keys[pygame.K_a]:
         if current_time - player.last_time_shot > player.reload_time:
-            beams.append(Beam(blue_beam, player.x + 15, player.y, 2))
+            beams.append(PlayerBeam(blue_beam, player.x + 15, player.y, 2))
             player.last_time_shot = current_time
 
     if keys[pygame.K_s]:
