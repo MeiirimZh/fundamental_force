@@ -16,6 +16,7 @@ entropy_soldiers = []
 
 # Variables
 enemy_count = 30
+enemy_spawn_time = 1
 last_enemy_spawn_time = 0
 rush = False
 game_won = False
@@ -42,9 +43,13 @@ def reset_game():
 def wave1():
     global start_time, last_enemy_spawn_time, rush, game_won, enemy_count
 
+    # Get time
     current_time = pygame.time.get_ticks()
     elapsed_time = current_time - start_time
 
+    keys = pygame.key.get_pressed()
+
+    # GUI
     armor_text = basic_font.render(f'Armor: {player.armor}', True, (255, 255, 255))
     enemy_count_text = basic_font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
 
@@ -54,7 +59,6 @@ def wave1():
         rush_text = basic_font.render('Rush: READY', True, (255, 255, 255))
         player.can_rush = True
 
-    keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] and player.y >= 0:
         player.y -= player.speed
     elif keys[pygame.K_DOWN] and player.y <= 539:
@@ -69,10 +73,9 @@ def wave1():
             beams.append(PlayerBeam(blue_beam, player.x + 15, player.y, 2))
             player.last_time_shot = current_time
 
-    if keys[pygame.K_s]:
-        if player.can_rush:
-            player.last_time_rushed = round(elapsed_time / 1000)
-            rush = True
+    if keys[pygame.K_s] and player.can_rush:
+        player.last_time_rushed = round(elapsed_time / 1000)
+        rush = True
 
     if rush:
         rush_text = basic_font.render('Rush: EXECUTING', True, (255, 255, 255))
@@ -83,7 +86,7 @@ def wave1():
 
     screen.blit(space_bg_1, (0, 0))
 
-    if round(current_time/1000) - last_enemy_spawn_time == 1 and len(entropy_soldiers) < enemy_count:
+    if round(current_time/1000) - last_enemy_spawn_time == enemy_spawn_time and len(entropy_soldiers) < enemy_count:
         entropy_soldiers.append(CommonEnemy(entropy_soldier_ship, enemy_beams, enemy_red_beam, 0.5))
         last_enemy_spawn_time = round(current_time/1000)
     else:
@@ -95,24 +98,23 @@ def wave1():
         if soldier.y >= 600:
             entropy_soldiers.remove(soldier)
 
-        if rush:
-            soldier.speed = 2
-
         if not rush:
-            if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
+            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.width and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.height:
                 if not soldier.has_collied:
                     player.armor -= 1
                     soldier.has_collied = True
             else:
                 soldier.has_collied = False
         else:
-            if player.x <= soldier.x + 71 and soldier.x <= player.x + 59 and player.y <= soldier.y + 79 and soldier.y <= player.y + 61:
+            soldier.speed = 2
+            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.width and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.height:
                 if not soldier.has_collied:
                     entropy_soldiers.remove(soldier)
                     enemy_count -= 1
             else:
                 soldier.has_collied = False
 
+    # Output texts
     screen.blit(armor_text, (10, 10))
     screen.blit(enemy_count_text, (10, 50))
     screen.blit(help_text[0], (10, 500))
@@ -130,7 +132,7 @@ def wave1():
             screen.blit(beam.sprite, (beam.x, beam.y))
 
         for soldier in entropy_soldiers:
-            if beam.x in range(int(soldier.x), int(soldier.x)+71) and beam.y in range(int(soldier.y), int(soldier.y)+79):
+            if beam.x in range(int(soldier.x), int(soldier.x)+soldier.width) and beam.y in range(int(soldier.y), int(soldier.y)+soldier.height):
                 beams.remove(beam)
                 entropy_soldiers.remove(soldier)
                 enemy_count -= 1
@@ -138,10 +140,9 @@ def wave1():
     for enemy_beam in enemy_beams:
         enemy_beam.move()
         screen.blit(enemy_beam.sprite, (enemy_beam.x, enemy_beam.y))
-        if (player.x <= enemy_beam.x + 30) and (enemy_beam.x <= player.x + player.width) and (player.y <= enemy_beam.y + 127) and (enemy_beam.y <= player.y + player.height):
+        if (player.x <= enemy_beam.x + enemy_beam.width) and (enemy_beam.x <= player.x + player.width) and (player.y <= enemy_beam.y + enemy_beam.height) and (enemy_beam.y <= player.y + player.height) and not rush:
             enemy_beams.remove(enemy_beam)
-            if not rush:
-                player.armor -= 1
+            player.armor -= 1
 
         if rush:
             enemy_beam.speed = 4
