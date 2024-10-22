@@ -11,6 +11,7 @@ pygame.display.set_caption("Fundamental Force")
 bg = pygame.image.load('SpaceBg.jpg').convert()
 flavio_ship = pygame.image.load('FlavioShip.png')
 entropy_soldier_ship = pygame.image.load('EntropySoldier.png')
+blue_beam = pygame.image.load('BlueBeam1.png')
 enemy_red_beam = pygame.image.load('RedBeam1.png')
 
 # Fonts
@@ -30,8 +31,8 @@ game_won = False
 start_time = 0
 
 class Beam:
-    def __init__(self, x, y, speed):
-        self.sprite = pygame.image.load('BlueBeam1.png')
+    def __init__(self, sprite, x, y, speed):
+        self.sprite = sprite
 
         self.x = x
         self.y = y
@@ -89,7 +90,7 @@ def wave1():
 
     if keys[pygame.K_a]:
         if current_time - player.last_time_shot > player.reload_time:
-            beams.append(Beam(player.x + 15, player.y, 2))
+            beams.append(Beam(blue_beam, player.x + 15, player.y, 2))
             player.last_time_shot = current_time
 
     if keys[pygame.K_s]:
