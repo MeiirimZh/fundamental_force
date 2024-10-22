@@ -2,22 +2,12 @@ import pygame
 from player import Player
 from player_beam import PlayerBeam
 from common_enemy import CommonEnemy
+from config import (SCREEN_WIDTH, SCREEN_HEIGHT, basic_font, help_text,
+    space_bg_1, flavio_ship, entropy_soldier_ship, blue_beam, enemy_red_beam)
 
 # Configuring the window
 pygame.init()
-screen = pygame.display.set_mode((960, 600))
-pygame.display.set_caption("Fundamental Force")
-
-# Images
-bg = pygame.image.load('SpaceBg.jpg').convert()
-flavio_ship = pygame.image.load('FlavioShip.png')
-entropy_soldier_ship = pygame.image.load('EntropySoldier.png')
-blue_beam = pygame.image.load('BlueBeam1.png')
-enemy_red_beam = pygame.image.load('RedBeam1.png')
-
-# Fonts
-font = pygame.font.Font('BebasNeue-Regular.ttf', 32)
-info_font = pygame.font.Font('BebasNeue-Regular.ttf', 18)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Sprite collections
 beams = []
@@ -25,17 +15,13 @@ enemy_beams = []
 entropy_soldiers = []
 
 # Variables
-enemy_count = 20
+enemy_count = 30
 last_enemy_spawn_time = 0
 rush = False
 game_won = False
 start_time = 0
 
 player = Player(flavio_ship,450, 400, 1, 5)
-
-help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
-             info_font.render('Shoot: [A]', True, (255, 255, 255)),
-             info_font.render('Rush: [S]', True, (255, 255, 255)))
 
 def reset_game():
     global start_time, beams, enemy_beams, \
@@ -59,13 +45,13 @@ def wave1():
     current_time = pygame.time.get_ticks()
     elapsed_time = current_time - start_time
 
-    armor_text = font.render(f'Armor: {player.armor}', True, (255, 255, 255))
-    enemy_count_text = font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
+    armor_text = basic_font.render(f'Armor: {player.armor}', True, (255, 255, 255))
+    enemy_count_text = basic_font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
 
     if round(elapsed_time/1000)-player.last_time_rushed < player.rush_reload:
-        rush_text = font.render(f'Rush: {player.rush_reload-(round(elapsed_time/1000)-player.last_time_rushed)}', True, (255, 255, 255))
+        rush_text = basic_font.render(f'Rush: {player.rush_reload-(round(elapsed_time/1000)-player.last_time_rushed)}', True, (255, 255, 255))
     else:
-        rush_text = font.render('Rush: READY', True, (255, 255, 255))
+        rush_text = basic_font.render('Rush: READY', True, (255, 255, 255))
         player.can_rush = True
 
     keys = pygame.key.get_pressed()
@@ -89,13 +75,13 @@ def wave1():
             rush = True
 
     if rush:
-        rush_text = font.render('Rush: EXECUTING', True, (255, 255, 255))
+        rush_text = basic_font.render('Rush: EXECUTING', True, (255, 255, 255))
         if round(elapsed_time/1000) - player.last_time_rushed == player.rush_duration:
             rush = False
             player.last_time_rushed += player.rush_duration
             player.can_rush = False
 
-    screen.blit(bg, (0, 0))
+    screen.blit(space_bg_1, (0, 0))
 
     if round(current_time/1000) - last_enemy_spawn_time == 1 and len(entropy_soldiers) < enemy_count:
         entropy_soldiers.append(CommonEnemy(entropy_soldier_ship, enemy_beams, enemy_red_beam, 0.5))

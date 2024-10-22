@@ -3,6 +3,8 @@ from wave1 import *
 from gameover import *
 from win import *
 
+pygame.display.set_caption("Fundamental Force")
+
 def main():
     running = True
 
