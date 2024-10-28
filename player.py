@@ -5,6 +5,9 @@ class Player:
         self.width = sprite.get_size()[0]
         self.height = sprite.get_size()[1]
 
+        self.hit_box_x = self.width - 20
+        self.hit_box_y = self.height - 20
+
         self.x = x
         self.y = y
         self.speed = speed

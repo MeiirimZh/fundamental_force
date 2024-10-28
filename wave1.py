@@ -34,7 +34,7 @@ def reset_game():
     player.x = 450
     player.y = 400
     entropy_soldiers = []
-    enemy_count = 20
+    enemy_count = 30
     last_enemy_spawn_time = 0
     start_time = pygame.time.get_ticks()
     player.last_time_rushed = 0
@@ -99,7 +99,7 @@ def wave1():
             entropy_soldiers.remove(soldier)
 
         if not rush:
-            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.width and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.height:
+            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.hit_box_x and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.hit_box_y:
                 if not soldier.has_collied:
                     player.armor -= 1
                     soldier.has_collied = True
@@ -107,7 +107,7 @@ def wave1():
                 soldier.has_collied = False
         else:
             soldier.speed = 2
-            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.width and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.height:
+            if player.x <= soldier.x + soldier.width and soldier.x <= player.x + player.hit_box_x and player.y <= soldier.y + soldier.height and soldier.y <= player.y + player.hit_box_y:
                 if not soldier.has_collied:
                     entropy_soldiers.remove(soldier)
                     enemy_count -= 1
@@ -140,7 +140,7 @@ def wave1():
     for enemy_beam in enemy_beams:
         enemy_beam.move()
         screen.blit(enemy_beam.sprite, (enemy_beam.x, enemy_beam.y))
-        if (player.x <= enemy_beam.x + enemy_beam.width) and (enemy_beam.x <= player.x + player.width) and (player.y <= enemy_beam.y + enemy_beam.height) and (enemy_beam.y <= player.y + player.height) and not rush:
+        if (player.x <= enemy_beam.x + enemy_beam.width) and (enemy_beam.x <= player.x + player.hit_box_x) and (player.y <= enemy_beam.y + enemy_beam.height) and (enemy_beam.y <= player.y + player.hit_box_y) and not rush:
             enemy_beams.remove(enemy_beam)
             player.armor -= 1
 
