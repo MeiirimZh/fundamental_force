@@ -3,11 +3,19 @@ from player import Player
 from player_beam import PlayerBeam
 from common_enemy import CommonEnemy
 from config import (SCREEN_WIDTH, SCREEN_HEIGHT, basic_font, help_text,
-    space_bg_1, flavio_ship, entropy_soldier_ship, blue_beam, enemy_red_beam)
+    space_bg_1, flavio_ship, entropy_soldier_ship, blue_beam, enemy_red_beam,
+    laser_sound_1)
 
 # Configuring the window
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# Init mixer
+pygame.mixer.init()
+
+# Background music
+pygame.mixer.music.load("music/One Ship Army.mp3")
+pygame.mixer.music.play(-1)
 
 # Sprite collections
 beams = []
@@ -70,6 +78,7 @@ def wave1():
 
     if keys[pygame.K_a]:
         if current_time - player.last_time_shot > player.reload_time:
+            laser_sound_1.play()
             beams.append(PlayerBeam(blue_beam, player.x + 15, player.y, 2))
             player.last_time_shot = current_time
 
