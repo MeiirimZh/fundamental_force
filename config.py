@@ -20,6 +20,7 @@ help_text = (info_font.render('Move: [Arrows]', True, (255, 255, 255)),
 
 # Sounds
 laser_sound_1 = pygame.mixer.Sound("sounds/laser_sound_1.mp3")
+explosion_sound_1 = pygame.mixer.Sound("sounds/explosion_1.mp3")
 
 # Images
 space_bg_1 = pygame.image.load('images/SpaceBg.jpg').convert()

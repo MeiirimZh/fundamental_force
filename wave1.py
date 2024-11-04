@@ -4,7 +4,7 @@ from player_beam import PlayerBeam
 from common_enemy import CommonEnemy
 from config import (SCREEN_WIDTH, SCREEN_HEIGHT, basic_font, help_text,
     space_bg_1, flavio_ship, entropy_soldier_ship, blue_beam, enemy_red_beam,
-    laser_sound_1, soldier_value, score)
+    laser_sound_1, explosion_sound_1, score, soldier_value)
 
 # Configuring the window
 pygame.init()
@@ -125,6 +125,8 @@ def wave1():
                 if not soldier.has_collied:
                     entropy_soldiers.remove(soldier)
                     enemy_count -= 1
+
+                    explosion_sound_1.play()
             else:
                 soldier.has_collied = False
 
@@ -152,6 +154,8 @@ def wave1():
                 score += soldier_value
                 entropy_soldiers.remove(soldier)
                 enemy_count -= 1
+
+                explosion_sound_1.play()
 
     for enemy_beam in enemy_beams:
         enemy_beam.move()
