@@ -4,7 +4,7 @@ from player_beam import PlayerBeam
 from common_enemy import CommonEnemy
 from config import (SCREEN_WIDTH, SCREEN_HEIGHT, basic_font, help_text,
     space_bg_1, flavio_ship, entropy_soldier_ship, blue_beam, enemy_red_beam,
-    laser_sound_1)
+    laser_sound_1, soldier_value, score)
 
 # Configuring the window
 pygame.init()
@@ -49,7 +49,7 @@ def reset_game():
     rush = False
 
 def wave1():
-    global start_time, last_enemy_spawn_time, rush, game_won, enemy_count
+    global start_time, last_enemy_spawn_time, rush, game_won, enemy_count, score, soldier_value
 
     # Get time
     current_time = pygame.time.get_ticks()
@@ -60,6 +60,11 @@ def wave1():
     # GUI
     armor_text = basic_font.render(f'Armor: {player.armor}', True, (255, 255, 255))
     enemy_count_text = basic_font.render(f'Enemies: {enemy_count}', True, (255, 255, 255))
+    score_text = basic_font.render(f'Scores: {score}', True, (255, 255, 255))
+
+    # Reduce scores
+    if score > 0:
+        score -= 1
 
     if round(elapsed_time/1000)-player.last_time_rushed < player.rush_reload:
         rush_text = basic_font.render(f'Rush: {player.rush_reload-(round(elapsed_time/1000)-player.last_time_rushed)}', True, (255, 255, 255))
@@ -126,10 +131,11 @@ def wave1():
     # Output texts
     screen.blit(armor_text, (10, 10))
     screen.blit(enemy_count_text, (10, 50))
+    screen.blit(rush_text, (10, 90))
+    screen.blit(score_text, (800, 10))
     screen.blit(help_text[0], (10, 500))
     screen.blit(help_text[1], (10, 520))
     screen.blit(help_text[2], (10, 540))
-    screen.blit(rush_text, (10, 90))
 
     screen.blit(player.sprite, (player.x, player.y))
 
@@ -143,6 +149,7 @@ def wave1():
         for soldier in entropy_soldiers:
             if beam.x in range(int(soldier.x), int(soldier.x)+soldier.width) and beam.y in range(int(soldier.y), int(soldier.y)+soldier.height):
                 beams.remove(beam)
+                score += soldier_value
                 entropy_soldiers.remove(soldier)
                 enemy_count -= 1
 

@@ -27,3 +27,7 @@ flavio_ship = pygame.image.load('images/FlavioShip.png')
 entropy_soldier_ship = pygame.image.load('images/EntropySoldier.png')
 blue_beam = pygame.image.load('images/BlueBeam1.png')
 enemy_red_beam = pygame.image.load('images/RedBeam1.png')
+
+# Variables
+score = 0
+soldier_value = 1000

@@ -14,7 +14,7 @@ def main():
                 running = False
 
         if w1.enemy_count == 0:
-            win()
+            win(w1.score)
         elif player.armor != 0:
             wave1()
         else:
